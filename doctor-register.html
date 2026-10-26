@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل طبيب | منصة الأطباء</title>
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        /* رسائل النموذج */
+        .form-msg {
+            margin-top: 18px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-weight: 700;
+            text-align: center;
+        }
+        .form-msg.success {
+            background: rgba(46, 160, 90, 0.15);
+            border: 1px solid #2ea05a;
+            color: #7ee2a8;
+        }
+        .form-msg.error {
+            background: rgba(220, 70, 70, 0.15);
+            border: 1px solid #dc4646;
+            color: #ff9a9a;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== الهيدر ===== -->
+<header>
+    <h1><span class="logo-icon">🏥</span> منصة الأطباء</h1>
+    <nav>
+        <a href="index.html">الرئيسية</a>
+        <a href="specialties.html">التخصصات</a>
+        <a href="doctors.html">الأطباء</a>
+        <a href="index.html#how">كيف تعمل المنصة</a>
+        <a href="doctor-register.html">للأطباء</a>
+    </nav>
+</header>
+
+<main>
+
+    <section>
+        <div class="section-heading">
+            <div><span>انضم إلينا</span><h2>🩺 تسجيل طبيب</h2></div>
+        </div>
+
+        <div class="form-card">
+            <p class="msg-box" style="margin:0 0 10px">
+                ⚠️ سيتم مراجعة طلبك والتحقق من بياناتك قبل نشر ملفك في المنصة. رقم الهاتف والعنوان وساعات الدوام تظهر للمرضى بعد الموافقة.
+            </p>
+
+            <form id="registerForm">
+
+                <!-- بيانات الحساب -->
+                <label for="full_name">الاسم الكامل</label>
+                <input type="text" id="full_name" name="full_name" placeholder="مثال: د. أحمد محمد" required>
+
+                <label for="email">البريد الإلكتروني (لا يظهر للمرضى)</label>
+                <input type="email" id="email" name="email" placeholder="example@gmail.com" required>
+
+                <label for="password">كلمة المرور</label>
+                <input type="password" id="password" name="password" minlength="8" placeholder="8 أحرف على الأقل" required>
+
+                <label for="password2">تأكيد كلمة المرور</label>
+                <input type="password" id="password2" name="password2" minlength="8" required>
+
+                <!-- بيانات التواصل -->
+                <label for="phone">رقم الهاتف</label>
+                <input type="tel" id="phone" name="phone" placeholder="07XXXXXXXXX" required>
+
+                <label for="whatsapp">رقم الواتساب</label>
+                <input type="tel" id="whatsapp" name="whatsapp" placeholder="07XXXXXXXXX" required>
+
+                <!-- البيانات المهنية -->
+                <label for="specialization">التخصص الطبي</label>
+                <select id="specialization" name="specialization" required>
+                    <option value="">اختر التخصص</option>
+                    <option>القلب والشرايين</option>
+                    <option>طب الأسنان</option>
+                    <option>طب العيون</option>
+                    <option>طب الأطفال</option>
+                    <option>الأمراض الجلدية</option>
+                    <option>العظام والمفاصل</option>
+                    <option>طب الأعصاب</option>
+                    <option>الأنف والأذن والحنجرة</option>
+                    <option>الصدر والجهاز التنفسي</option>
+                    <option>الطب الباطني</option>
+                    <option>المسالك البولية</option>
+                    <option>النساء والولادة</option>
+                </select>
+
+                <label for="degree">الشهادة العلمية</label>
+                <input type="text" id="degree" name="degree" placeholder="مثال: بورد اختصاص قلبية" required>
+
+                <label for="experience_years">سنوات الخبرة</label>
+                <input type="number" id="experience_years" name="experience_years" min="0" max="70" placeholder="10" required>
+
+                <label for="license_number">رقم إجازة ممارسة المهنة (لا يظهر للمرضى)</label>
+                <input type="text" id="license_number" name="license_number" required>
+
+                <!-- بيانات العيادة -->
+                <label for="clinic_name">اسم العيادة</label>
+                <input type="text" id="clinic_name" name="clinic_name" required>
+
+                <label for="address">عنوان العيادة</label>
+                <input type="text" id="address" name="address" placeholder="الديوانية - شارع الأطباء" required>
+
+                <label for="work_hours">أوقات الدوام</label>
+                <input type="text" id="work_hours" name="work_hours" placeholder="مثال: السبت - الخميس 5:00 - 8:00 مساءً" required>
+
+                <label for="maps_url">رابط العيادة على خرائط Google (اختياري)</label>
+                <input type="url" id="maps_url" name="maps_url" placeholder="https://maps.google.com/...">
+
+                <label for="bio">نبذة عن الطبيب (اختياري)</label>
+                <textarea id="bio" name="bio" placeholder="اكتب نبذة قصيرة عن خبرتك وخدماتك"></textarea>
+
+                <button type="submit" id="submitBtn">📩 إرسال طلب التسجيل</button>
+
+                <p id="formMsg" class="form-msg" hidden></p>
+            </form>
+        </div>
+    </section>
+
+</main>
+
+<!-- ===== الفوتر ===== -->
+<footer>
+    <h3>🏥 منصة الأطباء</h3>
+    <p>منصة تجمع الأطباء والمرضى في مكان واحد.</p>
+    <p>© 2026 منصة الأطباء</p>
+</footer>
+
+<script>
+const form = document.getElementById("registerForm");
+const msg = document.getElementById("formMsg");
+const btn = document.getElementById("submitBtn");
+
+function showMsg(text, type) {
+    msg.hidden = false;
+    msg.className = "form-msg " + type;
+    msg.textContent = text;
+}
+
+form.addEventListener("submit", async function (e) {
+    e.preventDefault(); // يمنع تحديث الصفحة
+
+    // فحص تطابق كلمتي المرور قبل الإرسال
+    if (form.password.value !== form.password2.value) {
+        showMsg("❌ كلمتا المرور غير متطابقتين.", "error");
+        return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = "جارٍ الإرسال...";
+
+    try {
+        const response = await fetch("register.php", {
+            method: "POST",
+            body: new FormData(form)
+        });
+        const data = await response.json();
+
+        if (data.ok) {
+            showMsg(data.message, "success");
+            form.reset();
+        } else {
+            showMsg("❌ " + data.message, "error");
+        }
+    } catch (err) {
+        showMsg("❌ تعذر الاتصال بالخادم. تأكد أن Apache شغال وأنك فاتح الصفحة من localhost.", "error");
+    }
+
+    btn.disabled = false;
+    btn.textContent = "📩 إرسال طلب التسجيل";
+});
+</script>
+
+</body>
+</html>

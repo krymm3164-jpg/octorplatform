@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الأطباء | منصة الأطباء</title>
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        .doctor-card .doc-spec { color: var(--gold-light); font-weight: 700; margin-bottom: 8px; }
+        .doctor-card .doc-line { font-size: 0.95rem; margin-bottom: 6px; color: #dfe2f3; }
+        .doctor-card .doc-bio  { font-size: 0.9rem; color: var(--muted); margin-top: 10px; }
+        .doctor-card .doc-map  { display: inline-block; margin-top: 10px; }
+        .empty-note { text-align: center; color: var(--muted); padding: 30px 10px; }
+        .show-all { display: inline-block; margin-bottom: 16px; }
+        .search-box { max-width: 500px; margin: 0 0 20px; }
+    </style>
+</head>
+<body>
+
+<!-- ===== الهيدر: نفس هيدر بقية الصفحات ===== -->
+<header>
+    <h1><span class="logo-icon">🏥</span> منصة الأطباء</h1>
+    <nav>
+        <a href="index.html">الرئيسية</a>
+        <a href="specialties.html">التخصصات</a>
+        <a href="doctors.html">الأطباء</a>
+        <a href="index.html#how">كيف تعمل المنصة</a>
+        <a href="doctor-register.html">للأطباء</a>
+    </nav>
+</header>
+
+<main>
+
+    <section>
+        <div class="section-heading">
+            <div><span>الأطباء</span><h2 id="pageTitle">الأطباء المسجلون</h2></div>
+            <a href="specialties.html">← رجوع للتخصصات</a>
+        </div>
+
+        <!-- يظهر فقط عند الفلترة حسب تخصص -->
+        <a id="showAll" class="show-all" href="doctors.html" hidden>عرض كل الأطباء</a>
+
+        <!-- مربع البحث بالاسم: يظهر بعد تحميل الأطباء -->
+        <div id="searchBox" class="search-box" hidden>
+            <input type="search" id="searchInput" placeholder="🔍 ابحث باسم الطبيب..." autocomplete="off">
+        </div>
+
+        <!-- بطاقات الأطباء تُملأ تلقائياً من doctors.php -->
+        <div id="doctorsList" class="doctors-list"></div>
+
+        <p id="doctorsNote" class="empty-note">جارٍ تحميل الأطباء...</p>
+    </section>
+
+</main>
+
+<!-- ===== الفوتر: نفس فوتر بقية الصفحات ===== -->
+<footer>
+    <h3>🏥 منصة الأطباء</h3>
+    <p>منصة تجمع الأطباء والمرضى في مكان واحد.</p>
+    <p>© 2026 منصة الأطباء</p>
+</footer>
+
+<script>
+const list = document.getElementById("doctorsList");
+const note = document.getElementById("doctorsNote");
+const title = document.getElementById("pageTitle");
+const showAll = document.getElementById("showAll");
+const searchBox = document.getElementById("searchBox");
+const searchInput = document.getElementById("searchInput");
+
+// التخصص المطلوب من الرابط (مثل ?specialty=cardiology)
+const slug = new URLSearchParams(window.location.search).get("specialty") || "";
+
+let allDoctors = [];   // كل الأطباء المحمّلين
+let emptyMessage = ""; // رسالة "لا يوجد أطباء" حسب الحالة
+
+// دالة تحمي الصفحة من أي نص خطير يكتبه المستخدم
+function esc(text) {
+    const div = document.createElement("div");
+    div.textContent = text ?? "";
+    return div.innerHTML;
+}
+
+// توحيد الحروف العربية حتى يشتغل البحث رغم اختلاف الكتابة (أ/ا، ة/ه، ى/ي) وبدون التشكيل
+function normalize(text) {
+    return (text ?? "")
+        .toString()
+        .toLowerCase()
+        .replace(/[\u064B-\u065F\u0670]/g, "")
+        .replace(/[أإآ]/g, "ا")
+        .replace(/ة/g, "ه")
+        .replace(/ى/g, "ي")
+        .trim();
+}
+
+function doctorCard(d) {
+    const map = d.maps_url
+        ? `<a class="doc-map" href="${esc(d.maps_url)}" target="_blank" rel="noopener">📍 الموقع على الخريطة</a>`
+        : "";
+    const bio = d.bio ? `<p class="doc-bio">${esc(d.bio)}</p>` : "";
+
+    return `
+        <div class="doctor-card">
+            <h3>${esc(d.full_name)}</h3>
+            <p class="doc-spec">${esc(d.specialization)}</p>
+            <p class="doc-line">🎓 ${esc(d.degree)}</p>
+            <p class="doc-line">⏳ خبرة ${esc(d.experience_years)} سنة</p>
+            <p class="doc-line">🏥 ${esc(d.clinic_name)}</p>
+            <p class="doc-line">📌 ${esc(d.address)}</p>
+            <p class="doc-line">🕒 ${esc(d.work_hours)}</p>
+            <p class="doc-line">📞 ${esc(d.phone)}</p>
+            <p class="doc-line">💬 واتساب: ${esc(d.whatsapp)}</p>
+            ${map}
+            ${bio}
+        </div>`;
+}
+
+// رسم القائمة حسب نص البحث
+function render() {
+    const q = normalize(searchInput.value);
+    const filtered = q
+        ? allDoctors.filter(d => normalize(d.full_name).includes(q))
+        : allDoctors;
+
+    list.innerHTML = filtered.map(doctorCard).join("");
+
+    if (filtered.length === 0) {
+        note.hidden = false;
+        note.textContent = q ? "لا يوجد طبيب بهذا الاسم." : emptyMessage;
+    } else {
+        note.hidden = true;
+    }
+}
+
+async function loadDoctors() {
+    try {
+        const url = slug ? "doctors.php?specialty=" + encodeURIComponent(slug) : "doctors.php";
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (!data.ok) {
+            note.textContent = "❌ " + data.message;
+            showAll.hidden = !slug;
+            return;
+        }
+
+        // عند الفلترة: غيّر العنوان وأظهر رابط "عرض كل الأطباء"
+        if (data.specialty) {
+            title.textContent = "أطباء " + data.specialty;
+            showAll.hidden = false;
+        }
+
+        emptyMessage = data.specialty
+            ? "لا يوجد أطباء معتمدون في هذا التخصص حالياً."
+            : "لا يوجد أطباء مسجلون حالياً. سيظهر هنا كل طبيب بعد تسجيله والتحقق من بياناته.";
+
+        allDoctors = data.doctors;
+
+        // مربع البحث يظهر فقط إذا في أطباء
+        searchBox.hidden = allDoctors.length === 0;
+        render();
+    } catch (err) {
+        note.textContent = "❌ تعذر الاتصال بالخادم. تأكد أن Apache شغال وأنك فاتح الصفحة من localhost.";
+    }
+}
+
+searchInput.addEventListener("input", render);
+
+loadDoctors();
+</script>
+
+</body>
+</html>
